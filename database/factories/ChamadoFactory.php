@@ -20,7 +20,7 @@ class ChamadoFactory extends Factory
         return [
             'titulo' => $this->faker->sentence(4),
             'descricao' => $this->faker->paragraph(),
-            'solitante' => $this->faker->name(),
+            'solicitante' => $this->faker->name(),
             'data_de_abertura' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'data_de_fechamento' => $this->faker->dateTimeBetween('now', '+1 month'),
             'status' => $this->faker->randomElement(['pedente', 'em_andamento', 'finalizado']),

@@ -9,6 +9,9 @@ class ChamadoController extends Controller
 {
     public function index(){
         $chamados = Chamado::all();
-        return view('lista_chamados', [$chamados]);
+        return view('lista_chamados', ['chamados'=> $chamados]);
+    }
+    public function create_chamado(Request $request){
+
     }
 }

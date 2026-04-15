@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('titulo');
             $table->text('descricao');
-            $table->string('solitante');
+            $table->string('solicitante');
             $table->date('data_de_abertura');
             $table->date('data_de_fechamento');
             $table->enum('status',['pedente', 'em_andamento', 'finalizado']);

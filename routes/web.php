@@ -7,3 +7,4 @@ Route::get(
     '/',
     [ChamadoController::class, 'index']
 );
+Route::post('/novo_chamado', [ChamadoController::class, 'novo_chamado']);
