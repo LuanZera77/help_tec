@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('descricao');
             $table->string('solicitante');
             $table->date('data_de_abertura');
-            $table->date('data_de_fechamento');
-            $table->enum('status',['pedente', 'em_andamento', 'finalizado']);
+            $table->date('data_de_fechamento')->nullable();
+            $table->enum('status',['pendente', 'em_andamento', 'finalizado']);
             
             $table->timestamps();
         });

@@ -6,6 +6,29 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formAdd">
             Adicionar
         </button>
+        <x-modals.create id="formAdd" title="Adicionar">
+            @csrf
+            <form action="{{ route('create_chamado') }}" method="post">
+                @csrf
+                <div class="form-floating mb-3">
+                    <input name="titulo" type="text" class="form-control" id="input_titulo">
+                    <label for="input_titulo">Título</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input name="solicitante" type="text" class="form-control" id="input_solicitante">
+                    <label for="input_solicitante">Solicitante</label>
+                </div>
+                <div class="form-floating">
+                    <textarea name="descricao" class="form-control" placeholder="Leave a comment here" id="input_descricao"
+                        style="height: 100px"></textarea>
+                    <label for="input_descricao">Descreva a solicitação</label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Confirmar</button>
+                </div>
+            </form>
+        </x-modals.create>
     </section>
     <section>
         <table class="table">
@@ -18,6 +41,7 @@
                     <th scope="col">Data de Fechamento</th>
                     <th scope="col">Status</th>
                     <th scope="col">Descrição</th>
+                    <th>Ação</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
@@ -30,30 +54,32 @@
                         <td>{{ \Carbon\Carbon::parse($chmd->data_de_fechamando)->format('d/m/y') }}</td>
                         <td>{{ $chmd->status }}</td>
                         <td>{{ $chmd->descricao }}</td>
+                        <td>
+                            {{-- Excluir --}}
+                            <section>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#{{ $chmd->id }}">
+                                    Excluir Chamado
+                                </button>
+
+                                <x-modals.confirm-action id="{{ $chmd->id }}" title="Confirmar Exclusão">
+                                    Tem certeza que deseja apagar este registro? Esta ação é irreversível.
+
+                                    <x-slot:footer>
+                                        <form action="{{ route('delete_chamado', $chmd->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger">Excluir</button>
+                                        </form>
+                                    </x-slot:footer>
+                                </x-modals.confirm-action>
+                            </section>
+
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </section>
-
-    <!-- Modal -->
-    <div class="modal fade" id="formAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    ...
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Understood</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
 @endsection
