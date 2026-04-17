@@ -11,6 +11,32 @@
         </div>
 
         <div class="card shadow-sm border-0">
+            <div class="card shadow-sm mb-4 border-0">
+                <div class="card-body">
+                    <form action="{{ route('home') }}" method="GET" class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label class="fw-bold text-muted small">FILTRAR POR STATUS:</label>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                <option value="">Todos os Chamados</option>
+                                <option value="pendente" {{ request('status') == 'pendente' ? 'selected' : '' }}>Pendente
+                                </option>
+                                <option value="em_andamento" {{ request('status') == 'em_andamento' ? 'selected' : '' }}>Em
+                                    Andamento</option>
+                                <option value="finalizado" {{ request('status') == 'finalizado' ? 'selected' : '' }}>
+                                    Finalizado</option>
+                            </select>
+                        </div>
+                        @if (request('status'))
+                            <div class="col-auto">
+                                <a href="{{ route('home') }}"
+                                    class="btn btn-sm btn-link text-decoration-none text-danger">Limpar Filtro</a>
+                            </div>
+                        @endif
+                    </form>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -36,8 +62,7 @@
                                             'finalizado' => 'bg-success',
                                         };
                                     @endphp
-                                    <span
-                                        class="badge rounded-pill {{ $bg_color }}">
+                                    <span class="badge rounded-pill {{ $bg_color }}">
                                         {{ $chmd->status }}
                                     </span>
                                 </td>
@@ -55,40 +80,105 @@
 
                                     <x-modals.info id="info_{{ $chmd->id }}" title="Chamado #{{ $chmd->id }}">
                                         <div class="row g-3">
+                                            <div class="col-12 d-flex justify-content-between align-items-center">
+                                                <label class="fw-bold text-muted small text-uppercase">Status Atual</label>
+                                                <span
+                                                    class="badge {{ $chmd->status == 'em_andamento' ? 'bg-info' : ($chmd->status == 'finalizado' ? 'bg-success' : 'bg-warning text-dark') }}">
+                                                    {{ str_replace('_', ' ', ucfirst($chmd->status)) }}
+                                                </span>
+                                            </div>
+
                                             <div class="col-12">
                                                 <label class="fw-bold text-muted small text-uppercase">Título</label>
                                                 <p class="fs-5">{{ $chmd->titulo }}</p>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label class="fw-bold text-muted small text-uppercase">Solicitante</label>
-                                                <p>{{ $chmd->solicitante }}</p>
-                                            </div>
+
                                             <div class="col-12">
-                                                <hr class="my-2">
                                                 <label class="fw-bold text-muted small text-uppercase">Descrição</label>
-                                                <div class="bg-light p-3 rounded mt-1">
+                                                <div class="bg-light p-3 rounded border">
                                                     {{ $chmd->descricao }}
                                                 </div>
                                             </div>
-                                            <div class="col-12 d-flex justify-content-between mt-3 small text-muted">
-                                                <span><strong>Abertura:</strong>
-                                                    {{ \Carbon\Carbon::parse($chmd->data_de_abertura)->format('d/m/Y') }}</span>
-                                                <span><strong>Fechamento:</strong>
-                                                    {{ $chmd->data_de_fechamando ? \Carbon\Carbon::parse($chmd->data_de_fechamando)->format('d/m/Y') : 'Em andamento' }}</span>
+
+                                            <hr class="my-3">
+
+                                            <div class="col-12">
+                                                <label class="fw-bold text-muted small text-uppercase d-block mb-2">Alterar
+                                                    Status para:</label>
+                                                <div class="d-flex flex-wrap gap-2">
+
+                                                    @if ($chmd->status != 'pendente')
+                                                        <form action="{{ route('update_status', $chmd->id) }}"
+                                                            method="POST">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="pendente">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-outline-warning">Pendente</button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if ($chmd->status != 'em_andamento')
+                                                        <form action="{{ route('update_status', $chmd->id) }}"
+                                                            method="POST">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="em_andamento">
+                                                            <button type="submit" class="btn btn-sm btn-outline-info">Em
+                                                                Andamento</button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if ($chmd->status != 'finalizado')
+                                                        <form action="{{ route('update_status', $chmd->id) }}"
+                                                            method="POST">
+                                                            @csrf @method('PATCH')
+                                                            <input type="hidden" name="status" value="finalizado">
+                                                            <button type="submit"
+                                                                class="btn btn-sm btn-outline-success">Finalizar
+                                                                Chamado</button>
+                                                        </form>
+                                                    @endif
+
+                                                </div>
+                                            </div>
+
+                                            <div class="col-12 mt-3 small text-muted border-top pt-2">
+                                                <strong>Aberto em:</strong>
+                                                {{ \Carbon\Carbon::parse($chmd->data_de_abertura)->format('d/m/Y H:i') }}
+                                                <div class="col-12 mt-3 pt-3 border-top">
+                                                    <label
+                                                        class="fw-bold text-muted small text-uppercase d-block mb-1">
+                                                        TEMPO
+                                                    </label>
+
+                                                    @if ($chmd->status === 'finalizado' && $chmd->data_de_fechamento)
+                                                        @php
+                                                            $abertura = \Carbon\Carbon::parse($chmd->data_de_abertura);
+                                                            $fechamento = \Carbon\Carbon::parse(
+                                                                $chmd->data_de_fechamento,
+                                                            );
+                                                            $totalSegundos = $abertura->diffInSeconds($fechamento);
+                                                            $minutos = floor($totalSegundos / 60);
+                                                            $segundos = $totalSegundos % 60;
+                                                        @endphp
+                                                        <div class="alert alert-secondary py-2 mb-0">
+                                                            <i class="bi bi-stopwatch me-2"></i>
+                                                            Tempo total para finalização:
+                                                            <strong>{{ $minutos }}m {{ $segundos }}s</strong>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </x-modals.info>
-
                                     {{-- Modal Excluir --}}
                                     <x-modals.delete id="del_modal_{{ $chmd->id }}" title="Confirmar Exclusão">
                                         <p class="mb-0">Deseja realmente excluir o chamado
-                                            <strong>#{{ $chmd->id }}</strong>?</p>
+                                            <strong>#{{ $chmd->id }}</strong>?
+                                        </p>
                                         <x-slot:footer>
                                             <form action="{{ route('delete_chamado', $chmd->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Cancelar</button>
                                                 <button type="submit" class="btn btn-danger">Excluir</button>
                                             </form>
                                         </x-slot:footer>
