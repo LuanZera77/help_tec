@@ -196,16 +196,16 @@
         <form action="{{ route('create_chamado') }}" method="post">
             @csrf
             <div class="form-floating mb-3">
-                <input name="titulo" type="text" class="form-control" id="input_titulo" placeholder="Título">
+                <input name="titulo" type="text" class="form-control" id="input_titulo" placeholder="Título" required>
                 <label for="input_titulo">Título</label>
             </div>
             <div class="form-floating mb-3">
                 <input name="solicitante" type="text" class="form-control" id="input_solicitante"
-                    placeholder="Solicitante">
+                    placeholder="Solicitante" required>
                 <label for="input_solicitante">Solicitante</label>
             </div>
             <div class="form-floating mb-3">
-                <textarea name="descricao" class="form-control" placeholder="Descrição" id="input_descricao" style="height: 120px"></textarea>
+                <textarea name="descricao" class="form-control" placeholder="Descrição" id="input_descricao" style="height: 120px" required></textarea>
                 <label for="input_descricao">Descrição da solicitação</label>
             </div>
             <div class="modal-footer px-0 pb-0">
